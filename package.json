@@ -1,0 +1,54 @@
+{
+  "name": "mi-flora-adapter",
+  "display_name": "Mi Flora",
+  "version": "0.1.0",
+  "description": "Connect your Mi Flora devices",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tim-hellhake/mi-flora-adapter.git"
+  },
+  "author": "Tim Hellhake",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/tim-hellhake/mi-flora-adapter/issues"
+  },
+  "homepage": "https://github.com/tim-hellhake/mi-flora-adapter#readme",
+  "files": [
+    "LICENSE",
+    "SHA256SUMS",
+    "index.js",
+    "mi-flora-adapter.js"
+  ],
+  "moziot": {
+    "api": {
+      "min": 2,
+      "max": 2
+    },
+    "plugin": true,
+    "exec": "{nodeLoader} {path}",
+    "schema": {
+      "type": "object",
+      "required": [
+        "pollInterval"
+      ],
+      "properties": {
+        "pollInterval": {
+          "type": "integer",
+          "title": "The number of seconds between two polls"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "noble-mac": "git+https://github.com/Timeular/noble-mac.git"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.16.0"
+  }
+}
