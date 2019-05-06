@@ -6,7 +6,7 @@
 
 'use strict';
 
-const noble = require('noble-mac');
+const noble = require('@abandonware/noble');
 
 const {
   Adapter,
