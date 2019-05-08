@@ -164,7 +164,9 @@ class MiFloraAdapter extends Adapter {
     });
 
     noble.on('discover', (peripheral) => {
-      if (peripheral.advertisement.localName == 'Flower care') {
+      const name = peripheral.advertisement.localName;
+
+      if (name == 'Flower care' || name == 'Flower mate') {
         const knownDevice = knownDevices[peripheral.address];
 
         if (!knownDevice) {
