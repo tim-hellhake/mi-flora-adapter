@@ -7,3 +7,6 @@
 [![license](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](LICENSE)
 
 Connect your mi-flora devices.
+
+## Configuration
+- `pollInterval` To reduce the impact on battery life the adapter does not keep a permanent connection to the device. Instead, it connects to the device, reads the data and disconnects. The `pollInterval` species how much time should be between two read requests. The default value is `30 Minutes`.

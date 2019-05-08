@@ -45,10 +45,10 @@ class MiFlora extends Device {
     this.properties.set(description.title, property);
   }
 
-  startPolling(interval) {
+  startPolling(intervalMs) {
     this.timer = setInterval(() => {
       this.poll();
-    }, interval * 1000);
+    }, intervalMs);
   }
 
   async poll() {
@@ -150,7 +150,14 @@ class MiFlora extends Device {
 class MiFloraAdapter extends Adapter {
   constructor(addonManager, manifest) {
     super(addonManager, MiFloraAdapter.name, manifest.name);
-    const pollInterval = manifest.moziot.config.pollInterval;
+    const pollInterval = manifest.moziot.config.pollInterval || 30;
+
+    if (!manifest.moziot.config.pollInterval) {
+      console.warn('Config does not contain a value for pollInterval');
+    }
+
+    console.log(`The pollInterval is ${pollInterval} minutes`);
+
     addonManager.addAdapter(this);
     const knownDevices = {};
 
@@ -174,7 +181,7 @@ class MiFloraAdapter extends Adapter {
           const device = new MiFlora(this, peripheral);
           knownDevices[peripheral.address] = device;
           this.handleDeviceAdded(device);
-          device.startPolling(pollInterval || 30);
+          device.startPolling(pollInterval * 60 * 1000);
         }
       }
     });

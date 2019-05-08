@@ -1,7 +1,7 @@
 {
   "name": "mi-flora-adapter",
   "display_name": "Mi Flora",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Connect your Mi Flora devices",
   "main": "index.js",
   "scripts": {
@@ -31,6 +31,9 @@
     },
     "plugin": true,
     "exec": "{nodeLoader} {path}",
+    "config": {
+      "pollInterval": 30
+    },
     "schema": {
       "type": "object",
       "required": [
@@ -39,7 +42,7 @@
       "properties": {
         "pollInterval": {
           "type": "integer",
-          "title": "The number of seconds between two polls"
+          "title": "The number of minutes between two read requests (should be as high as possible to save battery)"
         }
       }
     }
