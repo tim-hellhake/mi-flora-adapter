@@ -24,9 +24,18 @@ class MiFlora extends Device {
     super(adapter, `${MiFlora.name}-${peripheral.address}`);
     this.peripheral = peripheral;
     this['@context'] = 'https://iot.mozilla.org/schemas/';
-    this['@type'] = ['MultiLevelSensor'];
+    this['@type'] = ['TemperatureSensor', 'MultiLevelSensor'];
     this.name = this.id;
     this.description = 'Mi Flora';
+
+    this.addProperty({
+      type: 'integer',
+      '@type': 'TemperatureProperty',
+      unit: 'degree celsius',
+      title: 'temperature',
+      description: 'The ambient temperature',
+      readOnly: true
+    });
 
     this.addProperty({
       type: 'integer',
@@ -65,6 +74,7 @@ class MiFlora extends Device {
     const data = await this.read(dataCharacteristic);
     this.disconnect();
     console.log(`Read data characteristic`);
+    this.updateValue('temperature', data.readUInt16LE(0) / 10);
     this.updateValue('moisture', data.readUInt16BE(6));
   }
 
