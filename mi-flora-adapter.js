@@ -75,7 +75,7 @@ class MiFlora extends Device {
     this.disconnect();
     console.log(`Read data characteristic`);
     this.updateValue('temperature', data.readUInt16LE(0) / 10);
-    this.updateValue('moisture', data.readUInt16BE(6));
+    this.updateValue('moisture', data.readUInt8(7));
   }
 
   updateValue(name, value) {
