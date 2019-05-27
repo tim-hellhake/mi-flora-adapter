@@ -9,6 +9,7 @@
 const noble = require('@abandonware/noble');
 
 const {
+  Database,
   Adapter,
   Device,
   Property
@@ -20,13 +21,13 @@ const MODE_CHARACTERISTIC = '00001a0000001000800000805f9b34fb';
 const MODE_SENSOR = Buffer.from([0xA0, 0x1F]);
 
 class MiFlora extends Device {
-  constructor(adapter, peripheral) {
-    super(adapter, `${MiFlora.name}-${peripheral.address}`);
-    this.peripheral = peripheral;
+  constructor(adapter, manifest, address) {
+    super(adapter, `${MiFlora.name}-${address}`);
     this['@context'] = 'https://iot.mozilla.org/schemas/';
     this['@type'] = ['TemperatureSensor', 'MultiLevelSensor'];
     this.name = this.id;
     this.description = 'Mi Flora';
+    this.database = new Database(manifest.name);
 
     this.addProperty({
       type: 'integer',
@@ -47,6 +48,20 @@ class MiFlora extends Device {
       minimum: 0,
       maximum: 100
     });
+
+    const {
+      knownDevices
+    } = manifest.moziot.config;
+
+    if (knownDevices && knownDevices[address]) {
+      const {
+        temperature,
+        moisture
+      } = knownDevices[address];
+
+      this.updateValue('temperature', temperature || 0);
+      this.updateValue('moisture', moisture || 0);
+    }
   }
 
   addProperty(description) {
@@ -54,17 +69,18 @@ class MiFlora extends Device {
     this.properties.set(description.title, property);
   }
 
-  startPolling(intervalMs) {
+  startPolling(peripheral, intervalMs) {
     this.timer = setInterval(() => {
-      this.poll();
+      this.poll(peripheral);
     }, intervalMs);
   }
 
-  async poll() {
+  async poll(peripheral) {
     console.log(`Connecting to ${this.id}`);
-    await this.connect();
+    await this.connect(peripheral);
     console.log(`Connected to ${this.id}`);
-    const [dataService] = await this.discoverServices([DATA_SERVICE]);
+    // eslint-disable-next-line max-len
+    const [dataService] = await this.discoverServices(peripheral, [DATA_SERVICE]);
     console.log(`Discovered services`);
     // eslint-disable-next-line max-len
     const [modeCharacteristic, dataCharacteristic] = await this.discoverCharacteristics(dataService, [MODE_CHARACTERISTIC, DATA_CHARACTERISTIC]);
@@ -72,10 +88,26 @@ class MiFlora extends Device {
     await this.write(modeCharacteristic, MODE_SENSOR);
     console.log(`Enabled sensor mode`);
     const data = await this.read(dataCharacteristic);
-    this.disconnect();
+    this.disconnect(peripheral);
     console.log(`Read data characteristic`);
-    this.updateValue('temperature', data.readUInt16LE(0) / 10);
-    this.updateValue('moisture', data.readUInt8(7));
+    const temperature = data.readUInt16LE(0) / 10;
+    const moisture = data.readUInt8(7);
+    this.updateValue('temperature', temperature);
+    this.updateValue('moisture', moisture);
+
+    console.log('Saving new values to config');
+    await this.database.open();
+    const config = this.database.loadConfig();
+    const newConfig = {
+      ...config,
+      knownDevices: {
+        [peripheral.address]: {
+          temperature,
+          moisture
+        }
+      }
+    };
+    await this.database.saveConfig(newConfig);
   }
 
   updateValue(name, value) {
@@ -84,9 +116,9 @@ class MiFlora extends Device {
     this.notifyPropertyChanged(property);
   }
 
-  async connect() {
+  async connect(peripheral) {
     return new Promise((resolve, reject) => {
-      this.peripheral.connect((error) => {
+      peripheral.connect((error) => {
         if (error) {
           reject(error);
         } else {
@@ -96,9 +128,9 @@ class MiFlora extends Device {
     });
   }
 
-  async discoverServices(uuids) {
+  async discoverServices(peripheral, uuids) {
     return new Promise((resolve, reject) => {
-      this.peripheral.discoverServices(uuids, (error, services) => {
+      peripheral.discoverServices(uuids, (error, services) => {
         if (error) {
           reject(error);
         } else {
@@ -144,9 +176,9 @@ class MiFlora extends Device {
     });
   }
 
-  async disconnect() {
+  async disconnect(peripheral) {
     return new Promise((resolve, reject) => {
-      this.peripheral.disconnect((error) => {
+      peripheral.disconnect((error) => {
         if (error) {
           reject(error);
         } else {
@@ -171,6 +203,22 @@ class MiFloraAdapter extends Adapter {
     addonManager.addAdapter(this);
     const knownDevices = {};
 
+    const addDevice = (address) => {
+      const device = new MiFlora(this, manifest, address);
+      knownDevices[address] = device;
+      this.handleDeviceAdded(device);
+      return device;
+    };
+
+    if (manifest.moziot.config.knownDevices) {
+      for (const address in manifest.moziot.config.knownDevices) {
+        console.log(`Recreating mi flora ${address} from knownDevices`);
+        addDevice(address);
+      }
+    }
+
+    const discoveredDevices = {};
+
     noble.on('stateChange', (state) => {
       console.log('Noble adapter is %s', state);
 
@@ -181,17 +229,21 @@ class MiFloraAdapter extends Adapter {
     });
 
     noble.on('discover', (peripheral) => {
+      const address = peripheral.address;
       const name = peripheral.advertisement.localName;
 
       if (name == 'Flower care' || name == 'Flower mate') {
-        const knownDevice = knownDevices[peripheral.address];
+        if (!discoveredDevices[address]) {
+          discoveredDevices[address] = true;
+          console.log(`Detected new mi flora ${address}`);
+          let knownDevice = knownDevices[address];
 
-        if (!knownDevice) {
-          console.log(`Detected new mi flora ${peripheral.address}`);
-          const device = new MiFlora(this, peripheral);
-          knownDevices[peripheral.address] = device;
-          this.handleDeviceAdded(device);
-          device.startPolling(pollInterval * 60 * 1000);
+          if (!knownDevice) {
+            console.log(`Adding mi flora ${address} to known devices`);
+            knownDevice = addDevice(address);
+          }
+
+          knownDevice.startPolling(peripheral, pollInterval * 60 * 1000);
         }
       }
     });
