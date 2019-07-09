@@ -97,7 +97,7 @@ class MiFlora extends Device {
 
     console.log('Saving new values to config');
     await this.database.open();
-    const config = this.database.loadConfig();
+    const config = await this.database.loadConfig();
     const newConfig = {
       ...config,
       knownDevices: {
