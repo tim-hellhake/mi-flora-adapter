@@ -17,6 +17,7 @@ const {
 
 const DATA_SERVICE = '0000120400001000800000805f9b34fb';
 const DATA_CHARACTERISTIC = '00001a0100001000800000805f9b34fb';
+const FIRMWARE_CHARACTERISTIC = '00001a02-0000-1000-8000-00805f9b34fb';
 const MODE_CHARACTERISTIC = '00001a0000001000800000805f9b34fb';
 const MODE_SENSOR = Buffer.from([0xA0, 0x1F]);
 
@@ -44,6 +45,17 @@ class MiFlora extends Device {
       unit: '%',
       title: 'moisture',
       description: 'The moisture of the soil',
+      readOnly: true,
+      minimum: 0,
+      maximum: 100
+    });
+
+    this.addProperty({
+      type: 'integer',
+      '@type': 'LevelProperty',
+      unit: '%',
+      title: 'battery',
+      description: 'The battery level',
       readOnly: true,
       minimum: 0,
       maximum: 100
@@ -83,17 +95,21 @@ class MiFlora extends Device {
     const [dataService] = await this.discoverServices(peripheral, [DATA_SERVICE]);
     console.log(`Discovered services`);
     // eslint-disable-next-line max-len
-    const [modeCharacteristic, dataCharacteristic] = await this.discoverCharacteristics(dataService, [MODE_CHARACTERISTIC, DATA_CHARACTERISTIC]);
+    const [modeCharacteristic, dataCharacteristic, firmwareCharacteristic] = await this.discoverCharacteristics(dataService, [MODE_CHARACTERISTIC, DATA_CHARACTERISTIC, FIRMWARE_CHARACTERISTIC]);
     console.log(`Discovered characteristics`);
     await this.write(modeCharacteristic, MODE_SENSOR);
     console.log(`Enabled sensor mode`);
     const data = await this.read(dataCharacteristic);
-    this.disconnect(peripheral);
     console.log(`Read data characteristic`);
+    const firmware = await this.read(firmwareCharacteristic);
+    console.log(`Read firmware characteristic`);
+    this.disconnect(peripheral);
     const temperature = data.readUInt16LE(0) / 10;
     const moisture = data.readUInt8(7);
+    const battery = firmware.readUInt8(0);
     this.updateValue('temperature', temperature);
     this.updateValue('moisture', moisture);
+    this.updateValue('battery', battery);
 
     console.log('Saving new values to config');
     await this.database.open();
