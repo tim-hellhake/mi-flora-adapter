@@ -101,15 +101,21 @@ class MiFlora extends Device {
     console.log(`Enabled sensor mode`);
     const data = await this.read(dataCharacteristic);
     console.log(`Read data characteristic`);
-    const firmware = await this.read(firmwareCharacteristic);
-    console.log(`Read firmware characteristic`);
-    this.disconnect(peripheral);
     const temperature = data.readUInt16LE(0) / 10;
     const moisture = data.readUInt8(7);
-    const battery = firmware.readUInt8(0);
     this.updateValue('temperature', temperature);
     this.updateValue('moisture', moisture);
-    this.updateValue('battery', battery);
+
+    if (firmwareCharacteristic) {
+      const firmware = await this.read(firmwareCharacteristic);
+      console.log(`Read firmware characteristic`);
+      const battery = firmware.readUInt8(0);
+      this.updateValue('battery', battery);
+    } else {
+      console.log('No firmware characteristic found');
+    }
+
+    this.disconnect(peripheral);
 
     console.log('Saving new values to config');
     await this.database.open();
