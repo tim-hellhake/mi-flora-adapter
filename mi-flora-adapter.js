@@ -85,6 +85,8 @@ class MiFlora extends Device {
     this.timer = setInterval(() => {
       this.poll(peripheral);
     }, intervalMs);
+
+    this.poll(peripheral);
   }
 
   async poll(peripheral) {
