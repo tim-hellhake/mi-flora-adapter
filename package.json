@@ -1,7 +1,7 @@
 {
   "name": "mi-flora-adapter",
   "display_name": "Mi Flora",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Connect your Mi Flora devices",
   "main": "index.js",
   "scripts": {
