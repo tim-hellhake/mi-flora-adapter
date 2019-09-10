@@ -71,6 +71,10 @@ class MiFlora extends Device {
         moisture
       } = knownDevices[address];
 
+      // eslint-disable-next-line max-len
+      console.log(`Loading last known value ${temperature} for temperature of ${this.id}`);
+      // eslint-disable-next-line max-len
+      console.log(`Loading last known value ${moisture} for moisture of ${this.id}`);
       this.updateValue('temperature', temperature || 0);
       this.updateValue('moisture', moisture || 0);
     }
@@ -135,6 +139,7 @@ class MiFlora extends Device {
   }
 
   updateValue(name, value) {
+    console.log(`Update value for ${name} of ${this.id} to ${value}`);
     const property = this.properties.get(name);
     property.setCachedValue(value);
     this.notifyPropertyChanged(property);
