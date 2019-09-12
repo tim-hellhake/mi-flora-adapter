@@ -72,9 +72,9 @@ class MiFlora extends Device {
       } = knownDevices[address];
 
       // eslint-disable-next-line max-len
-      console.log(`Loading last known value ${temperature} for temperature of ${this.id}`);
+      console.log(`[${this.id}] Loading last known value ${temperature} for temperature`);
       // eslint-disable-next-line max-len
-      console.log(`Loading last known value ${moisture} for moisture of ${this.id}`);
+      console.log(`[${this.id}] Loading last known value ${moisture} for moisture`);
       this.updateValue('temperature', temperature || 0);
       this.updateValue('moisture', moisture || 0);
     }
@@ -86,27 +86,31 @@ class MiFlora extends Device {
   }
 
   startPolling(peripheral, intervalMs) {
-    this.timer = setInterval(() => {
-      this.poll(peripheral);
+    this.timer = setInterval(async () => {
+      try {
+        await this.poll(peripheral);
+      } catch (e) {
+        console.error(`[${this.id}] Could not poll sensor: ${e}`);
+      }
     }, intervalMs);
 
     this.poll(peripheral);
   }
 
   async poll(peripheral) {
-    console.log(`Connecting to ${this.id}`);
+    console.log(`[${this.id}] Connecting`);
     await this.connect(peripheral);
-    console.log(`Connected to ${this.id}`);
+    console.log(`[${this.id}] Connected`);
     // eslint-disable-next-line max-len
     const [dataService] = await this.discoverServices(peripheral, [DATA_SERVICE]);
-    console.log(`Discovered services`);
+    console.log(`[${this.id}] Discovered services`);
     // eslint-disable-next-line max-len
     const [modeCharacteristic, dataCharacteristic, firmwareCharacteristic] = await this.discoverCharacteristics(dataService, [MODE_CHARACTERISTIC, DATA_CHARACTERISTIC, FIRMWARE_CHARACTERISTIC]);
-    console.log(`Discovered characteristics`);
+    console.log(`[${this.id}] Discovered characteristics`);
     await this.write(modeCharacteristic, MODE_SENSOR);
-    console.log(`Enabled sensor mode`);
+    console.log(`[${this.id}] Enabled sensor mode`);
     const data = await this.read(dataCharacteristic);
-    console.log(`Read data characteristic`);
+    console.log(`[${this.id}] Read data characteristic`);
     const temperature = data.readUInt16LE(0) / 10;
     const moisture = data.readUInt8(7);
     this.updateValue('temperature', temperature);
@@ -114,16 +118,16 @@ class MiFlora extends Device {
 
     if (firmwareCharacteristic) {
       const firmware = await this.read(firmwareCharacteristic);
-      console.log(`Read firmware characteristic`);
+      console.log(`[${this.id}] Read firmware characteristic`);
       const battery = firmware.readUInt8(0);
       this.updateValue('battery', battery);
     } else {
-      console.log('No firmware characteristic found');
+      console.log(`[${this.id}] No firmware characteristic found`);
     }
 
     this.disconnect(peripheral);
 
-    console.log('Saving new values to config');
+    console.log(`[${this.id}] Saving new values to config`);
     await this.database.open();
     const config = await this.database.loadConfig();
     const newConfig = {
@@ -139,7 +143,8 @@ class MiFlora extends Device {
   }
 
   updateValue(name, value) {
-    console.log(`Update value for ${name} of ${this.id} to ${value}`);
+    // eslint-disable-next-line max-len
+    console.log(`[${this.id}] Update value for ${name} to ${value}`);
     const property = this.properties.get(name);
     property.setCachedValue(value);
     this.notifyPropertyChanged(property);
