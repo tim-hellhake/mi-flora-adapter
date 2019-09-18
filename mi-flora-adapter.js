@@ -34,6 +34,7 @@ class MiFlora extends Device {
       type: 'integer',
       '@type': 'TemperatureProperty',
       unit: 'degree celsius',
+      multipleOf: 0.1,
       title: 'temperature',
       description: 'The ambient temperature',
       readOnly: true
