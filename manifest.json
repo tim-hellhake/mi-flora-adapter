@@ -1,0 +1,35 @@
+{
+    "id": "mi-flora-adapter",
+    "short_name": "Mi Flora",
+    "name": "Mi Flora",
+    "version": "0.2.3",
+    "author": "Tim Hellhake",
+    "description": "Connect your Mi Flora devices",
+    "homepage_url": "https://github.com/tim-hellhake/mi-flora-adapter#readme",
+    "license": "MPL-2.0",
+    "manifest_version": 1,
+    "gateway_specific_settings": {
+        "webthings": {
+            "exec": "{nodeLoader} {path}",
+            "primary_type": "adapter",
+            "strict_min_version": "0.10.0"
+        }
+    },
+    "options": {
+        "default": {
+            "pollInterval": 30
+        },
+        "schema": {
+            "type": "object",
+            "required": [
+                "pollInterval"
+            ],
+            "properties": {
+                "pollInterval": {
+                    "type": "integer",
+                    "title": "The number of minutes between two read requests (should be as high as possible to save battery)"
+                }
+            }
+        }
+    }
+}

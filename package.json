@@ -22,7 +22,8 @@
     "LICENSE",
     "SHA256SUMS",
     "index.js",
-    "mi-flora-adapter.js"
+    "mi-flora-adapter.js",
+    "manifest.json"
   ],
   "moziot": {
     "api": {
