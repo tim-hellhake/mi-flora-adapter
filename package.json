@@ -49,7 +49,7 @@
     }
   },
   "dependencies": {
-    "@abandonware/noble": "^1.9.2-3"
+    "@abandonware/noble": "^1.9.2-5"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",
