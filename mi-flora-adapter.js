@@ -43,8 +43,8 @@ class MiFlora extends Device {
     this.addProperty({
       type: 'integer',
       unit: 'lux',
-      title: 'brightness',
-      description: 'The brightness',
+      title: 'illuminance',
+      description: 'The illuminance',
       readOnly: true
     });
 
@@ -85,7 +85,7 @@ class MiFlora extends Device {
     if (knownDevices && knownDevices[address]) {
       const {
         temperature,
-        brightness,
+        illuminance,
         moisture,
         conductivity
       } = knownDevices[address];
@@ -93,13 +93,13 @@ class MiFlora extends Device {
       // eslint-disable-next-line max-len
       console.log(`[${this.id}] Loading last known value ${temperature} for temperature`);
       // eslint-disable-next-line max-len
-      console.log(`[${this.id}] Loading last known value ${brightness} for brightness`);
+      console.log(`[${this.id}] Loading last known value ${illuminance} for illuminance`);
       // eslint-disable-next-line max-len
       console.log(`[${this.id}] Loading last known value ${moisture} for moisture`);
       // eslint-disable-next-line max-len
       console.log(`[${this.id}] Loading last known value ${conductivity} for conductivity`);
       this.updateValue('temperature', temperature || 0);
-      this.updateValue('brightness', brightness || 0);
+      this.updateValue('illuminance', illuminance || 0);
       this.updateValue('moisture', moisture || 0);
       this.updateValue('conductivity', conductivity || 0);
     }
@@ -137,11 +137,11 @@ class MiFlora extends Device {
     const data = await this.read(dataCharacteristic);
     console.log(`[${this.id}] Read data characteristic`);
     const temperature = data.readUInt16LE(0) / 10;
-    const brightness = data.readUInt32LE(3);
+    const illuminance = data.readUInt32LE(3);
     const moisture = data.readUInt8(7);
     const conductivity = data.readUInt16LE(8);
     this.updateValue('temperature', temperature);
-    this.updateValue('brightness', brightness);
+    this.updateValue('illuminance', illuminance);
     this.updateValue('moisture', moisture);
     this.updateValue('conductivity', conductivity);
 
@@ -164,7 +164,7 @@ class MiFlora extends Device {
       knownDevices: {
         [peripheral.address]: {
           temperature,
-          brightness,
+          illuminance,
           moisture,
           conductivity
         }
