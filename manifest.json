@@ -2,7 +2,7 @@
     "id": "mi-flora-adapter",
     "short_name": "Mi Flora",
     "name": "Mi Flora",
-    "version": "0.3.0",
+    "version": "1.0.0",
     "author": "Tim Hellhake",
     "description": "Connect your Mi Flora devices",
     "homepage_url": "https://github.com/tim-hellhake/mi-flora-adapter#readme",
