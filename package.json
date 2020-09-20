@@ -25,29 +25,6 @@
     "mi-flora-adapter.js",
     "manifest.json"
   ],
-  "moziot": {
-    "api": {
-      "min": 2,
-      "max": 2
-    },
-    "plugin": true,
-    "exec": "{nodeLoader} {path}",
-    "config": {
-      "pollInterval": 30
-    },
-    "schema": {
-      "type": "object",
-      "required": [
-        "pollInterval"
-      ],
-      "properties": {
-        "pollInterval": {
-          "type": "integer",
-          "title": "The number of minutes between two read requests (should be as high as possible to save battery)"
-        }
-      }
-    }
-  },
   "dependencies": {
     "@abandonware/noble": "^1.9.2-5"
   },
