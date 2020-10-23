@@ -1,19 +1,19 @@
 module.exports = {
-  'env': {
-    'browser': true,
-    'commonjs': true,
-    'es6': true,
-    'jasmine': true,
-    'jest': true,
-    'mocha': true,
-    'node': true
+  env: {
+    browser: true,
+    commonjs: true,
+    es6: true,
+    jasmine: true,
+    jest: true,
+    mocha: true,
+    node: true
   },
-  'extends': 'eslint:recommended',
-  'parser': 'babel-eslint',
-  'parserOptions': {
-    'sourceType': 'module'
+  extends: 'eslint:recommended',
+  parser: 'babel-eslint',
+  parserOptions: {
+    sourceType: 'module'
   },
-  'rules': {
+  rules: {
     'arrow-parens': [
       'error',
       'always'
@@ -37,7 +37,7 @@ module.exports = {
       'error',
       'never'
     ],
-    'curly': 'error',
+    curly: 'error',
     'dot-notation': 'error',
     'eol-last': 'error',
     'func-call-spacing': [
@@ -48,37 +48,37 @@ module.exports = {
       'error',
       'beside'
     ],
-    'indent': [
+    indent: [
       'error',
       2,
       {
-        'ArrayExpression': 'first',
-        'CallExpression': {
-          'arguments': 'first'
+        ArrayExpression: 'first',
+        CallExpression: {
+          arguments: 'first'
         },
-        'FunctionDeclaration': {
-          'parameters': 'first'
+        FunctionDeclaration: {
+          parameters: 'first'
         },
-        'FunctionExpression': {
-          'parameters': 'first'
+        FunctionExpression: {
+          parameters: 'first'
         },
-        'ObjectExpression': 'first',
-        'SwitchCase': 1
+        ObjectExpression: 'first',
+        SwitchCase: 1
       }
     ],
     'key-spacing': [
       'error',
       {
-        'afterColon': true,
-        'beforeColon': false,
-        'mode': 'strict'
+        afterColon: true,
+        beforeColon: false,
+        mode: 'strict'
       }
     ],
     'keyword-spacing': [
       'error',
       {
-        'after': true,
-        'before': true
+        after: true,
+        before: true
       }
     ],
     'linebreak-style': [
@@ -107,7 +107,7 @@ module.exports = {
     'no-multi-spaces': [
       'error',
       {
-        'ignoreEOLComments': true
+        ignoreEOLComments: true
       }
     ],
     'no-multiple-empty-lines': 'error',
@@ -123,8 +123,8 @@ module.exports = {
     'no-unused-vars': [
       'error',
       {
-        'argsIgnorePattern': '^_',
-        'varsIgnorePattern': '^_'
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_'
       }
     ],
     'no-useless-computed-key': 'error',
@@ -137,7 +137,7 @@ module.exports = {
     'object-curly-newline': [
       'error',
       {
-        'consistent': true
+        consistent: true
       }
     ],
     'object-curly-spacing': [
@@ -147,7 +147,7 @@ module.exports = {
     'object-property-newline': [
       'error',
       {
-        'allowMultiplePropertiesPerLine': true
+        allowMultiplePropertiesPerLine: true
       }
     ],
     'operator-linebreak': [
@@ -157,7 +157,7 @@ module.exports = {
     'padded-blocks': [
       'error',
       {
-        'blocks': 'never'
+        blocks: 'never'
       }
     ],
     'prefer-const': 'error',
@@ -166,22 +166,22 @@ module.exports = {
       'error',
       'as-needed'
     ],
-    'quotes': [
+    quotes: [
       'error',
       'single',
       {
-        'allowTemplateLiterals': true
+        allowTemplateLiterals: true
       }
     ],
-    'semi': [
+    semi: [
       'error',
       'always'
     ],
     'semi-spacing': [
       'error',
       {
-        'after': true,
-        'before': false
+        after: true,
+        before: false
       }
     ],
     'semi-style': [
@@ -195,9 +195,9 @@ module.exports = {
     'space-before-function-paren': [
       'error',
       {
-        'anonymous': 'never',
-        'asyncArrow': 'always',
-        'named': 'never'
+        anonymous: 'never',
+        asyncArrow: 'always',
+        named: 'never'
       }
     ],
     'space-in-parens': [
@@ -208,17 +208,17 @@ module.exports = {
     'space-unary-ops': [
       'error',
       {
-        'nonwords': false,
-        'words': true
+        nonwords: false,
+        words: true
       }
     ],
     'spaced-comment': [
       'error',
       'always',
       {
-        'block': {
-          'balanced': true,
-          'exceptions': [
+        block: {
+          balanced: true,
+          exceptions: [
             '*'
           ]
         }
@@ -227,14 +227,14 @@ module.exports = {
     'switch-colon-spacing': [
       'error',
       {
-        'after': true,
-        'before': false
+        after: true,
+        before: false
       }
     ],
     'template-curly-spacing': [
       'error',
       'never'
     ],
-    'yoda': 'error'
+    yoda: 'error'
   }
 };
