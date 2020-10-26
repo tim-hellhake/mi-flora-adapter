@@ -4,9 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.*
  */
 
-'use strict';
+import { MiFloraAdapter } from './mi-flora-adapter';
 
-const MiFloraAdapter = require('./mi-flora-adapter');
-
-module.exports =
-    (addonManager, manifest) => new MiFloraAdapter(addonManager, manifest);
+export = (addonManager: any, manifest: any) => new MiFloraAdapter(addonManager, manifest);

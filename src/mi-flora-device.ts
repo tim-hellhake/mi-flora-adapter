@@ -6,11 +6,11 @@
 
 'use strict';
 
-const {
-  Database,
-  Device,
-  Property
-} = require('gateway-addon');
+import { Peripheral, Service, Characteristic } from '@abandonware/noble';
+
+import { MiFloraAdapter } from "./mi-flora-adapter";
+
+import { Database, Device, Property } from 'gateway-addon';
 
 const DATA_SERVICE = '0000120400001000800000805f9b34fb';
 const DATA_CHARACTERISTIC = '00001a0100001000800000805f9b34fb';
@@ -18,8 +18,10 @@ const FIRMWARE_CHARACTERISTIC = '00001a02-0000-1000-8000-00805f9b34fb';
 const MODE_CHARACTERISTIC = '00001a0000001000800000805f9b34fb';
 const MODE_SENSOR = Buffer.from([0xA0, 0x1F]);
 
-class MiFlora extends Device {
-  constructor(adapter, manifest, address) {
+export class MiFlora extends Device {
+  private database: Database;
+
+  constructor(adapter: MiFloraAdapter, manifest: any, address: string) {
     super(adapter, `${MiFlora.name}-${address}`);
     this['@context'] = 'https://iot.mozilla.org/schemas/';
     this['@type'] = ['TemperatureSensor', 'MultiLevelSensor'];
@@ -73,18 +75,18 @@ class MiFlora extends Device {
     }
   }
 
-  addProperty(description) {
+  addProperty(description: any) {
     const property = new Property(this, description.title, description);
     this.properties.set(description.title, property);
   }
 
-  startPolling(peripheral, intervalMs) {
-    this.timer = setInterval(() => {
+  startPolling(peripheral: Peripheral, intervalMs: number) {
+    setInterval(() => {
       this.poll(peripheral);
     }, intervalMs);
   }
 
-  async poll(peripheral) {
+  async poll(peripheral: Peripheral) {
     console.log(`Connecting to ${this.id}`);
     await this.connect(peripheral);
     console.log(`Connected to ${this.id}`);
@@ -129,13 +131,16 @@ class MiFlora extends Device {
     await this.database.saveConfig(newConfig);
   }
 
-  updateValue(name, value) {
+  updateValue(name: string, value: any) {
     const property = this.properties.get(name);
-    property.setCachedValue(value);
-    this.notifyPropertyChanged(property);
+
+    if (property) {
+      property.setCachedValue(value);
+      this.notifyPropertyChanged(property);
+    }
   }
 
-  async connect(peripheral) {
+  async connect(peripheral: Peripheral) {
     return new Promise((resolve, reject) => {
       peripheral.connect((error) => {
         if (error) {
@@ -147,8 +152,8 @@ class MiFlora extends Device {
     });
   }
 
-  async discoverServices(peripheral, uuids) {
-    return new Promise((resolve, reject) => {
+  async discoverServices(peripheral: Peripheral, uuids: string[]) {
+    return new Promise<Service[]>((resolve, reject) => {
       peripheral.discoverServices(uuids, (error, services) => {
         if (error) {
           reject(error);
@@ -159,8 +164,8 @@ class MiFlora extends Device {
     });
   }
 
-  async discoverCharacteristics(service, uuids) {
-    return new Promise((resolve, reject) => {
+  async discoverCharacteristics(service: Service, uuids: string[]) {
+    return new Promise<Characteristic[]>((resolve, reject) => {
       service.discoverCharacteristics(uuids, (error, characteristics) => {
         if (error) {
           reject(error);
@@ -171,8 +176,8 @@ class MiFlora extends Device {
     });
   }
 
-  async read(characteristic) {
-    return new Promise((resolve, reject) => {
+  async read(characteristic: Characteristic) {
+    return new Promise<Buffer>((resolve, reject) => {
       characteristic.read((error, data) => {
         if (error) {
           reject(error);
@@ -183,7 +188,7 @@ class MiFlora extends Device {
     });
   }
 
-  async write(characteristic, value) {
+  async write(characteristic: Characteristic, value: any) {
     return new Promise((resolve, reject) => {
       characteristic.write(value, false, (error) => {
         if (error) {
@@ -195,17 +200,11 @@ class MiFlora extends Device {
     });
   }
 
-  async disconnect(peripheral) {
-    return new Promise((resolve, reject) => {
-      peripheral.disconnect((error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
+  async disconnect(peripheral: Peripheral) {
+    return new Promise((resolve) => {
+      peripheral.disconnect(() => {
+        resolve();
       });
     });
   }
 }
-
-module.exports = MiFlora;

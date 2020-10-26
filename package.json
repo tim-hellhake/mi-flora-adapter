@@ -3,10 +3,10 @@
   "display_name": "Mi Flora",
   "version": "1.0.0",
   "description": "Connect your Mi Flora devices",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ."
+    "build": "tsc -p ."
   },
   "repository": {
     "type": "git",
@@ -21,15 +21,16 @@
   "files": [
     "LICENSE",
     "SHA256SUMS",
-    "index.js",
-    "mi-flora-adapter.js",
+    "lib/index.js",
+    "lib/mi-flora-adapter.js",
+    "lib/mi-flora-device.js",
     "manifest.json"
   ],
   "dependencies": {
     "@abandonware/noble": "1.9.2-10"
   },
   "devDependencies": {
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.11.0"
+    "@types/noble": "0.0.40",
+    "typescript": "^4.0.3"
   }
 }

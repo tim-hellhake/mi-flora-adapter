@@ -6,14 +6,14 @@
 
 'use strict';
 
-const noble = require('@abandonware/noble');
+import noble from '@abandonware/noble';
 
-const {Adapter} = require('gateway-addon');
+import { Adapter } from 'gateway-addon';
 
-const MiFlora = require('./mi-flora-device');
+import { MiFlora } from './mi-flora-device';
 
-class MiFloraAdapter extends Adapter {
-  constructor(addonManager, manifest) {
+export class MiFloraAdapter extends Adapter {
+  constructor(addonManager: any, manifest: any) {
     super(addonManager, MiFloraAdapter.name, manifest.name);
     const pollInterval = manifest.moziot.config.pollInterval || 30;
 
@@ -24,9 +24,9 @@ class MiFloraAdapter extends Adapter {
     console.log(`The pollInterval is ${pollInterval} minutes`);
 
     addonManager.addAdapter(this);
-    const knownDevices = {};
+    const knownDevices: { [key: string]: MiFlora } = {};
 
-    const addDevice = (address) => {
+    const addDevice = (address: string) => {
       const device = new MiFlora(this, manifest, address);
       knownDevices[address] = device;
       this.handleDeviceAdded(device);
@@ -40,7 +40,7 @@ class MiFloraAdapter extends Adapter {
       }
     }
 
-    const discoveredDevices = {};
+    const discoveredDevices: { [key: string]: boolean } = {};
 
     noble.on('stateChange', (state) => {
       console.log('Noble adapter is %s', state);
@@ -72,5 +72,3 @@ class MiFloraAdapter extends Adapter {
     });
   }
 }
-
-module.exports = MiFloraAdapter;
